@@ -1,8 +1,17 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.graph
 
 import org.scalacheck._, Prop._
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 object GraphTest extends Properties("Graph") {
   val edgeG = for {
     a ← Gen choose (0, 1000)

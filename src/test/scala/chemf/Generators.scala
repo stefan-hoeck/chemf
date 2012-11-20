@@ -1,8 +1,17 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf
 
 import scalaz._, Scalaz._, scalacheck.ScalaCheckBinding._
 import org.scalacheck._, Prop._, Arbitrary.arbitrary
 
+/**
+ * @author Stefan Höck
+ */
 trait Generators {
   implicit val ElementArbitrary = Arbitrary (Gen oneOf Element.values)
 

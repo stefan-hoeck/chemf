@@ -1,5 +1,14 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf
 
+/**
+ * @author Stefan Höck
+ */
 import collection.parallel.ForkJoinTasks.{defaultForkJoinPool ⇒ FJP}
 import parser._
 import scalaz._, Scalaz._

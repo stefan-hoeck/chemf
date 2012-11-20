@@ -1,9 +1,18 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf
 
 import Element.H
 import chemf.graph.LGraph
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 trait Molecules {
 
   /**

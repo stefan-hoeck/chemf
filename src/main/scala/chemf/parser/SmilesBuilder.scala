@@ -1,8 +1,17 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.parser
 
 import chemf._, Stereo.Undefined
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 trait SmilesBuilder[A] {
   type STrans = A ⇒ ValRes[A]
 

@@ -1,3 +1,9 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.parser
 
 import FAState.{dummy}
@@ -5,6 +11,9 @@ import chemf.graph.{Edge, LGraph}
 import chemf._, Element._, Bond._
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 sealed abstract class SmilesParser[A](implicit SB: SmilesBuilder[A]) {
   import SmilesParser._
 

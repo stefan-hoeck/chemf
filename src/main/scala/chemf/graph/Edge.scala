@@ -1,3 +1,9 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.graph
 
 import scalaz.{Scalaz, Equal}
@@ -10,6 +16,8 @@ import scalaz.{Scalaz, Equal}
  *
  * It is an invariant of this Edge-implementation that
  * for all edges b >= a
+ *
+ * @author Stefan Höck
  */
 final class Edge private (val a: Int, val b: Int) extends Ordered[Edge] {
   /**

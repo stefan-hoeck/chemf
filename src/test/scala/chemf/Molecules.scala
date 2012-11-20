@@ -1,9 +1,18 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf
 
 import graph.LGraph
 import org.scalacheck._, Prop._
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 object MoleculesTest extends Properties("Molecules") {
 
   private def singleAtomProp[A] (a: Molecule ⇒ A, f: (Element,A) ⇒ Boolean)

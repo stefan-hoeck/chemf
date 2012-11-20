@@ -1,7 +1,16 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf
 
 import scalaz.Scalaz
 
+/**
+ * @author Stefan Höck
+ */
 sealed abstract class Bond(val symbol: String, val valence: Int)
 
 object Bond {

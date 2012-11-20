@@ -1,3 +1,9 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.graph
 
 import scala.collection.BitSet
@@ -10,6 +16,8 @@ import scalaz._, Scalaz._
  *
  * The graph has no explicit set of vertices. The graph contains all
  * vertices from 0 until its order.
+ *
+ * @author Stefan Höck
  */
 sealed trait Graph {
   import Graph._

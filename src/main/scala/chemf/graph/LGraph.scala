@@ -1,8 +1,17 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.graph
 
 import annotation.unchecked.uncheckedVariance
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 trait LGraph[E,+V] {
 
   /**

@@ -1,3 +1,9 @@
+/**                                                      **\
+**   Copyright (c) 2012 Organic Chemistry Group          **
+**                 Zurich University of Applied Sciences **
+**                 Wädenswil, Switzerland                **
+\**                                                      **/
+
 package chemf.parser
 
 import chemf.ValRes
@@ -5,6 +11,8 @@ import scalaz._, Scalaz._
 
 /**
  * A state in a Finite State Automaton
+ *
+ * @author Stefan Höck
  */
 sealed trait FAState[A] {
   /**
