@@ -1,3 +1,9 @@
+/**                                                               **\
+**   Copyright (c) 2012 Center of Organic and Medicinal Chemistry **
+**                 Zurich University of Applied Sciences          **
+**                 Wädenswil, Switzerland                         **
+\**                                                               **/
+
 import sbt._
 import Keys._
 

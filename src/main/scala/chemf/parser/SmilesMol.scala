@@ -1,8 +1,8 @@
-/**                                                      **\
-**   Copyright (c) 2012 Organic Chemistry Group          **
-**                 Zurich University of Applied Sciences **
-**                 Wädenswil, Switzerland                **
-\**                                                      **/
+/**                                                               **\
+**   Copyright (c) 2012 Center of Organic and Medicinal Chemistry **
+**                 Zurich University of Applied Sciences          **
+**                 Wädenswil, Switzerland                         **
+\**                                                               **/
 
 package chemf.parser
 
