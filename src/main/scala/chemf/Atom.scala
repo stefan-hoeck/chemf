@@ -1,8 +1,17 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import Element.H
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 case class Atom (
   isotope: Isotope,
   charge: Int,

@@ -1,9 +1,18 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf.graph
 
 import chemf._
 import org.scalacheck._, Prop._, Arbitrary.arbitrary
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 object LGraphTest extends Properties("LGraph") with Generators {
   val atomsG = (Gen listOf arbitrary[Atom]) map (_.toIndexedSeq)
 

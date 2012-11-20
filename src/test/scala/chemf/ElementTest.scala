@@ -1,8 +1,17 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import scalaz._; import Scalaz._
 import org.scalacheck._
 
+/**
+ * @author Stefan Höck
+ */
 object ElementTest extends Properties("Element") {
   
   property("orderNr") = Element.values.∀ (e ⇒ (Element fromNr e.atomicNr) ≟ e) 

@@ -1,0 +1,21 @@
+Copyright (c) 2012 Center for Organic and Medicinal Chemistry
+                   Zurich University of Applied Sciences
+                   Wädenswil, Switzerland
+
+This file is part of chemf, a purely functional
+cheminformatics toolkit written in Scala.
+
+chemf is free software published under the terms of
+the GNU General Public License either version 3, or
+(at your option) any later version.
+
+chemf is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with chemf. If not, see <http://www.gnu.org/licenses/>.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+

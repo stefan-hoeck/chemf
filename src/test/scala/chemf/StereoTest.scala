@@ -1,8 +1,17 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import org.scalacheck._, Prop._
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 object StereoTest extends Properties("Stereo") {
   property("fromSymbol") = 
     Stereo.values ∀ (s ⇒ (Stereo fromSymbol s.symbol) ≟ s.some)

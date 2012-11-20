@@ -1,9 +1,17 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import scalaz._, Scalaz._
 
 /**
  * Stereo descriptors in SMILES strings
+ *
+ * @author Stefan Höck
  */
 sealed trait Stereo {
   val symbol = "@" + toString

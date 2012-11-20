@@ -1,7 +1,16 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 package object parser {
 
   type FARes[A] = ValRes[(FAState[A], A)]

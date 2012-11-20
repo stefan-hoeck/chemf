@@ -1,9 +1,18 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf.parser
 
 import chemf.graph.{Edge, LGraph}
 import chemf._, Bond._, Element._
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 case class SmilesMol (
   atoms: IndexedSeq[SmilesAtom],
   bonds: List[(Edge,Bond)],

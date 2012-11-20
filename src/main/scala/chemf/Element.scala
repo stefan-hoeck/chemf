@@ -1,9 +1,18 @@
+/**                                                               **\
+**  Copyright (c) 2012 Center for Organic and Medicinal Chemistry  **
+**                Zurich University of Applied Sciences            **
+**                Wädenswil, Switzerland                           **
+\**                                                               **/
+
 package chemf
 
 import collection.immutable.IntMap
 import scala.xml.{Node, XML}
 import scalaz._, Scalaz._
 
+/**
+ * @author Stefan Höck
+ */
 sealed abstract class Element (val atomicNr: Int) {
 
   private val data = EData.dataMap get atomicNr
