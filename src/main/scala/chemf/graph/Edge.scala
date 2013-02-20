@@ -67,7 +67,7 @@ object Edge {
     if (a < b) new Edge(a, b) else new Edge (b, a)
   }
 
-  implicit val EdgeEqual: Equal[Edge] = Equal equalBy (e ⇒ (e.a, e.b))
+  implicit val EdgeOrder: Order[Edge] = Order orderBy (e ⇒ (e.a, e.b))
 
   private[this] val cache = Array.tabulate(250, 250)(create)
 

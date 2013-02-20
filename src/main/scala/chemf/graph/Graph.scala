@@ -67,7 +67,7 @@ sealed trait Graph {
   /**
    * Returns the number of neighbors of vertex v.
    */
-  def degree (v: Int): Int = adjacencyList (v) size
+  def degree (v: Int): Int = adjacencyList(v) size
 
   /**
    * A Set of all edges in this graph
@@ -77,17 +77,17 @@ sealed trait Graph {
   /**
    * True if v is an isolated vertex (= has no neighbor)
    */
-  def isIsolate (v: Int): Boolean = degree (v) ≟ 0
+  def isIsolate (v: Int): Boolean = degree(v) ≟ 0
 
   /**
    * True if v is a pendant vertex (= has exactly one neighbor)
    */
-  def isPendant (v: Int): Boolean = degree (v) ≟ 1
+  def isPendant (v: Int): Boolean = degree(v) ≟ 1
 
   /**
    * Returns an (unsorted) list of neighbors for vertex v.
    */
-  def neighbors (v: Int): List[Int] = adjacencyList (v)
+  def neighbors (v: Int): List[Int] = adjacencyList(v)
 
   /**
    * Returns the order (= number of vertices) of the graph

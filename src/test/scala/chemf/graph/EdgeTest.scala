@@ -26,6 +26,11 @@ object EdgeTest extends Properties ("Edge") {
     (ea ≟ eb) ≟ ((ea.a ≟ eb.a) && (ea.b ≟ eb.b))
   }
 
+  property("order") = forAll {es: (Edge,Edge) ⇒ 
+    val (ea, eb) = es
+    (ea ?|? eb) ≟ (ea.compare(eb) ?|? 0)
+  }
+
   property ("aSmallerb") = Prop.forAll {e: Edge ⇒ 
     e.a <= e.b
   }

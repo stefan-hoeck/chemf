@@ -91,6 +91,8 @@ trait LGraph[E,+V] {
    */
   def mapI[B] (f: (V,Int) ⇒ B): LGraph[E,B]
 
+  def neighbors(v: Int): List[Int] = graph neighbors v
+
   /**
    * The order (= number of vertices) of the graph
    */
@@ -122,11 +124,35 @@ trait LGraph[E,+V] {
 object LGraph {
   def empty[E,V]: LGraph[E,V] = apply(IxSq.empty)
 
-  def apply[E,V] (vs: IxSq[V], es: Map[Edge,E]): LGraph[E,V] =
+  def apply[E,V](vs: IxSq[V], es: Map[Edge,E]): LGraph[E,V] =
     LgImpl (Graph(vs.length, es.keySet), vs, es)
 
-  def apply[E,V] (vs: IxSq[V], es: (Edge,E)*): LGraph[E,V] =
+  def apply[E,V](vs: IxSq[V], es: (Edge,E)*): LGraph[E,V] =
     apply(vs, es.toMap)
+
+  def dijkstra[E,V](g: LGraph[E,V])(start: Int, weight: E ⇒ Long)
+    : (Array[Long],Array[Int]) = {
+
+    val min = Array.fill(g.order)(Long.MaxValue)
+    val visited = Array.fill(g.order)(false)
+    val p = Array.fill(g.order)(-1)
+    var h = Heap singleton (0L, start)
+    min(start) = 0L
+
+    while (! h.isEmpty) {
+      val ((l, i), rest) = h.uncons.get
+      h = rest
+      if (!visited(i)) {
+        visited(i) = true
+        g neighbors i foreach { n ⇒ 
+          val w = l + weight(g eLabel Edge(i, n))
+          if (w < min(n)) { min(n) = w; p(n) = i; h = h insert (w, n) }
+        }
+      }
+    }
+
+    (min, p)
+  }
 
   private[LGraph] def edgeList[E,V] (lg: LGraph[E,V]): Array[List[E]] = {
     def edgesFor (i: Int) =
