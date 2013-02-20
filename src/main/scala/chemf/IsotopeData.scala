@@ -35,15 +35,15 @@ object IsotopeData {
       def scalarToEndo (ns: Seq[Node]): Endo[IsotopeData] =
         ns \ "@dictRef" text match {
           case "bo:atomicNumber" ⇒
-            EndoTo(_ copy (atomicNr = ns.text.toInt))
+            Endo(_ copy (atomicNr = ns.text.toInt))
           case "bo:exactMass" ⇒
-            EndoTo(_ copy (exactMass = ns.text.toDouble.some))
+            Endo(_ copy (exactMass = ns.text.toDouble.some))
           case "bo:relativeAbundance" ⇒
-            EndoTo(_ copy (abundance = (ns.text.toDouble / 100D).some))
-          case _ ⇒ EndoTo(identity)
+            Endo(_ copy (abundance = (ns.text.toDouble / 100D).some))
+          case _ ⇒ Endo(identity)
         }
 
-      (ns \ "scalar") foldMap scalarToEndo apply
+      (ns \ "scalar").toList foldMap scalarToEndo apply
       IsotopeData((ns \ "@number" text) toInt)
     }
 

@@ -24,12 +24,12 @@ sealed abstract class SmilesParser[A](implicit SB: SmilesBuilder[A]) {
 
   lazy val char: FAS = FAState[A]((a, c) ⇒ c match {
       case EOT ⇒ (dummy[A], a).success
-      case 'C' ⇒ (chars('l'≟, _ ⇒ SB addElem Cl, SB addElem C), a).success
-      case 'B' ⇒ (chars('r'≟, _ ⇒ SB addElem Br, SB addElem B), a).success
+      case 'C' ⇒ (chars('l'==, _ ⇒ SB addElem Cl, SB addElem C), a).success
+      case 'B' ⇒ (chars('r'==, _ ⇒ SB addElem Br, SB addElem B), a).success
       case '[' ⇒ (accumBracket(""), a).success
       case '%' ⇒ (ring, a).success
       case x if (x.isDigit) ⇒ next (a)(SB ring x.asDigit)
-      case x   ⇒ unique get c fold (next(a), unknown(c))
+      case x   ⇒ unique get c cata (next(a), unknown(c))
     }
   )
 
@@ -77,7 +77,7 @@ sealed abstract class SmilesParser[A](implicit SB: SmilesBuilder[A]) {
       val mass = Option(m) map (_.toInt)
       val arom = s.head.isLower
       val st = (Option(stereo) >>= Stereo.fromSymbol) | Stereo.Undefined
-      val aClass = Option(id) fold (_.tail.toInt, 0)
+      val aClass = Option(id) cata (_.tail.toInt, 0)
 
       val hs =  h match {
         case null       ⇒ 0

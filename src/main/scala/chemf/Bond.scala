@@ -6,7 +6,7 @@
 
 package chemf
 
-import scalaz.Scalaz
+import scalaz.{Equal, Show}
 
 /**
  * @author Stefan Höck
@@ -22,9 +22,9 @@ object Bond {
 
   val values = List[Bond] (Single, Double, Triple, Quadruple, Aromatic)
 
-  implicit val BondEqual = Scalaz.equalA[Bond]
+  implicit val BondEqual = Equal.equalA[Bond]
 
-  implicit val BondShow = Scalaz.shows[Bond](_.symbol)
+  implicit val BondShow = Show.shows[Bond](_.symbol)
 }
 
 

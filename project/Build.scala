@@ -11,15 +11,16 @@ object BuildSettings {
   import Resolvers._
 
   val buildOrganization = "chemf"
-  val buildVersion = "1.0.0-SNAPSHOT"
-  val buildScalaVersion = "2.9.2"
+  val buildVersion = "1.0.1-SNAPSHOT"
+  val buildScalaVersion = "2.10.0"
 
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     resolvers ++= repos,
-    scalacOptions ++= Seq ("-deprecation"),
+    scalacOptions ++= Seq ("-deprecation", "-feature", "-language:postfixOps",
+      "-language:higherKinds"),
     initialCommands in console := """
       import scalaz._, Scalaz._
       import chemf._, Element._ 
@@ -41,13 +42,15 @@ object Resolvers {
 }
 
 object Dependencies {
-  val scalaz = "org.scalaz" %% "scalaz-core" % "6.0.4"
-  val scalacheckZ = "org.scalaz" %% "scalaz-scalacheck-binding" % "6.0.4"
-  val scalacheckZT = scalacheckZ % "test"
+  val scalaz_core = "org.scalaz" %% "scalaz-core" % "7.0.0-M8"
+  val scalaz_effect = "org.scalaz" %% "scalaz-effect" % "7.0.0-M8"
+  val scalaz_iteratee = "org.scalaz" %% "scalaz-iteratee" % "7.0.0-M8"
+  val scalaz_scalacheck =
+    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.0.0-M8"
+  val scalaz_scalacheckT = scalaz_scalacheck % "test"
 
-  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.9"
+  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.10.0"
   val scalacheckT = scalacheck % "test"
-  val scalazCheckT = Seq(scalaz, scalacheckZT, scalacheckT)
 }
 
 object UtilBuild extends Build {
@@ -62,7 +65,10 @@ object UtilBuild extends Build {
   lazy val chemf = Project (
     "chemf",
     file("."),
-    settings = addDeps (scalazCheckT)
+    settings = addDeps (
+                 Seq(scalaz_core, scalaz_effect, scalaz_iteratee,
+                     scalaz_scalacheckT, scalacheckT)
+               )
   )
 }
 

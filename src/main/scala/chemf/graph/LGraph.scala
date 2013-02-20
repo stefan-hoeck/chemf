@@ -6,8 +6,9 @@
 
 package chemf.graph
 
+import collection.immutable.{IndexedSeq ⇒ IxSq}
 import annotation.unchecked.uncheckedVariance
-import scalaz._, Scalaz._
+import scalaz._, Scalaz._, scalaz.std.indexedSeq._
 
 /**
  * @author Stefan Höck
@@ -63,13 +64,16 @@ trait LGraph[E,+V] {
    * Right fold over all vertex labels. Similar to foldRight
    * found for typical container classes like List or Seq.
    */
-  def foldRight[B](z: ⇒ B, f: (V, ⇒ B) ⇒ B): B
+  def foldRight[B](z: ⇒ B)(f: (V, ⇒ B) ⇒ B): B
 
   /**
    * Left fold over all vertex labels. Similar to foldLeft
    * found for typical container classes like List or Seq.
    */
-  def foldLeft[B](z: B, f: (B,V) ⇒ B): B
+  def foldLeft[B](z: B)(f: (B,V) ⇒ B): B
+
+  def foldMap[B:Monoid](f: V ⇒ B): B =
+    foldLeft(∅[B])((b,v) ⇒ b ⊹ f(v))
 
   /**
    * Returns the underlying graph.
@@ -116,12 +120,12 @@ trait LGraph[E,+V] {
 }
 
 object LGraph {
-  def empty[E,V]: LGraph[E,V] = apply(IndexedSeq.empty)
+  def empty[E,V]: LGraph[E,V] = apply(IxSq.empty)
 
-  def apply[E,V] (vs: IndexedSeq[V], es: Map[Edge,E]): LGraph[E,V] =
+  def apply[E,V] (vs: IxSq[V], es: Map[Edge,E]): LGraph[E,V] =
     LgImpl (Graph(vs.length, es.keySet), vs, es)
 
-  def apply[E,V] (vs: IndexedSeq[V], es: (Edge,E)*): LGraph[E,V] =
+  def apply[E,V] (vs: IxSq[V], es: (Edge,E)*): LGraph[E,V] =
     apply(vs, es.toMap)
 
   private[LGraph] def edgeList[E,V] (lg: LGraph[E,V]): Array[List[E]] = {
@@ -134,7 +138,7 @@ object LGraph {
   /** Implementing Class **/
 
   private case class LgImpl[E,+V] (
-    graph: Graph, vertices: IndexedSeq[V], eMap: Map[Edge,E]
+    graph: Graph, vertices: IxSq[V], eMap: Map[Edge,E]
   ) extends LGraph[E,V] {
     def addVertex[W>:V](w: W) = LgImpl(graph.addVertex, vertices :+ w, eMap)
 
@@ -154,7 +158,7 @@ object LGraph {
     def emap[B] (f: E ⇒ B): LGraph[B,V] =
       new LgImpl (graph, vertices, eMap map {case (e,x) ⇒ (e, f(x))})
 
-    def foldRight[B](z: ⇒ B, f: (V, ⇒ B) ⇒ B): B = {
+    def foldRight[B](z: ⇒ B)(f: (V, ⇒ B) ⇒ B): B = {
       //implementation prevents stack overflow
       import scala.collection.mutable.ArrayStack
       val s = new ArrayStack[V]
@@ -164,47 +168,37 @@ object LGraph {
       r
     }
 
-    def foldLeft[B](z: B, f: (B,V) ⇒ B): B =
-      vertices.foldLeft (z)(f)
+    def foldLeft[B](z: B)(f: (B,V) ⇒ B): B =
+      vertices.foldLeft(z)(f)
 
     def removeEdge (e: Edge): LGraph[E,V] =
       LgImpl(graph - e, vertices, eMap - e)
 
-    def traverse[F[_]:Applicative,B](f: V ⇒ F[B]): F[LGraph[E,B]] = {
-      val a = implicitly[Apply[F]]
-      val newVs = vertices.foldLeft(IndexedSeq.empty[B].η)(
-        (ys, x) ⇒ a(f(x) ∘ ((b: B) ⇒ (bs: IndexedSeq[B]) ⇒ bs :+ b), ys)
-      )
-
-      newVs ∘ (LgImpl(graph, _, eMap))
-    }
+    def traverse[F[_]:Applicative,B](f: V ⇒ F[B]): F[LGraph[E,B]] =
+      vertices traverse f map (LgImpl(graph, _, eMap))
 
     def vLabel (v: Int) = vertices (v)
   }
 
   /** Type Classes **/
 
-  implicit def LGraphFunctor[E] =
-    new Functor[({type λ[α]=LGraph[E,α]})#λ] {
-      def fmap[A,B] (f: LGraph[E,A], g: A ⇒ B) = f map g
-    }
+  implicit def LGraphTraverse[E] = new Traverse[({type λ[α]=LGraph[E,α]})#λ] {
+    def traverseImpl[G[_]:Applicative,A,B](fa: LGraph[E,A])(f: A => G[B]) =
+      fa traverse f
 
-  implicit def LGraphFoldable[E] =
-    new Foldable[({type λ[α]=LGraph[E,α]})#λ] {
-      override def foldRight[A, B](t: LGraph[E,A], z: ⇒ B, f: (A, ⇒ B) ⇒ B)
-      : B = t.foldRight(z, f)
+    override def foldLeft[A,B](fa: LGraph[E,A], z: B)(f: (B,A) => B): B =
+      fa.foldLeft(z)(f)
 
-      override def foldLeft[A, B](t: LGraph[E,A], z: B, f: (B,A) ⇒ B): B =
-        t.foldLeft (z, f)
-    }
+    override def foldMap[A,B](fa: LGraph[E,A])(f: A => B)(implicit F: Monoid[B]): B =
+      fa foldMap f
 
-  implicit def LGraphTraverse[E] =
-    new Traverse[({type λ[α]=LGraph[E,α]})#λ] {
-      def traverse[F[_] : Applicative, A, B](f: A ⇒ F[B], t: LGraph[E,A]) =
-        t traverse f
-    }
+    override def foldRight[A, B](fa: LGraph[E,A], z: => B)(f: (A, => B) => B) =
+      fa.foldRight(z)(f)
 
-  implicit def LGraphShow[E:Show,V:Show] = shows[LGraph[E,V]]{g ⇒ 
+    override def map[A, B](fa: LGraph[E,A])(f: A => B) = fa map f
+  }
+
+  implicit def LGraphShow[E:Show,V:Show] = Show.shows[LGraph[E,V]]{g ⇒ 
     def vertice (i: Int) = "%d: %s" format (i, g vLabel i)
     def edge (e: Edge) = "%d - %d: %s" format (e.a, e.b, g eLabel e shows)
 

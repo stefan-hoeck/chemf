@@ -6,7 +6,7 @@
 
 package chemf.graph
 
-import scalaz.{Scalaz, Equal}
+import scalaz._, Scalaz._
 
 /**
  * An edge in an unlabeled undirected graph
@@ -67,7 +67,7 @@ object Edge {
     if (a < b) new Edge(a, b) else new Edge (b, a)
   }
 
-  implicit val EdgeEqual: Equal[Edge] = Scalaz equalBy (e ⇒ (e.a, e.b))
+  implicit val EdgeEqual: Equal[Edge] = Equal equalBy (e ⇒ (e.a, e.b))
 
   private[this] val cache = Array.tabulate(250, 250)(create)
 

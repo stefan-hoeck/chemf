@@ -9,18 +9,20 @@ package chemf
 /**
  * @author Stefan Höck
  */
-import collection.parallel.ForkJoinTasks.{defaultForkJoinPool ⇒ FJP}
+import collection.parallel.ForkJoinTaskSupport
 import parser._
 import scalaz._, Scalaz._
 
 object Main extends testing.Benchmark {
   def run {
-    FJP.setParallelism(9)
+    val ts = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(9))
     def str = getClass.getResourceAsStream("zinc.txt")
     def source = scala.io.Source fromInputStream str getLines
-    val lines = source.toArray
+    val lines = source.toArray.par
     def countImpHs(s: String) = smiles(s) fold (_ ⇒ 0, _ foldMap (_ hydrogens))
-    def res = lines.par map countImpHs sum
+
+    lines.tasksupport = ts
+    def res = lines map countImpHs sum
 
     println(res)
   }

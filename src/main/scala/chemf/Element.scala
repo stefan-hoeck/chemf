@@ -6,7 +6,7 @@
 
 package chemf
 
-import collection.immutable.IntMap
+import collection.immutable.{IntMap, IndexedSeq ⇒ IxSq}
 import scala.xml.{Node, XML}
 import scalaz._, Scalaz._
 
@@ -23,10 +23,10 @@ sealed abstract class Element (val atomicNr: Int) {
 
   val exactMass: Option[Double] = data >>= (_.exactMass)
 
-  lazy val isotopes: Seq[Isotope] =
-    (IsotopeData isotopes this).keySet.toSeq.sorted map (Isotope(this, _))
+  lazy val isotopes: IxSq[Isotope] =
+    (IsotopeData isotopes this).keySet.toIndexedSeq.sorted map (Isotope(this, _))
 
-  lazy val isotopeDist: Seq[(Isotope,Double)] = for {
+  lazy val isotopeDist: IxSq[(Isotope,Double)] = for {
     i ← isotopes
     d ← i.iData
     a ← d.abundance
@@ -34,7 +34,7 @@ sealed abstract class Element (val atomicNr: Int) {
 
   val mass: Option[Double] = data >>= (_.mass)
 
-  val name: String = data fold (_.name, "")
+  val name: String = data cata (_.name, "")
 
   val radiusCovalent: Option[Double] = data >>= (_.rCovalent)
 
@@ -194,7 +194,7 @@ object Element {
   val symbolMap: Map[String,Element] =
     values map (e ⇒ (e.symbol.toLowerCase, e)) toMap
 
-  implicit val ElementEqual: Equal[Element] = Scalaz.equalA
+  implicit val ElementEqual: Equal[Element] = Equal.equalA
 }
 
 private[chemf] case class EData(
@@ -217,32 +217,32 @@ private[chemf] object EData {
       def scalarToEndo (ns: Seq[Node]): Endo[EData] =
         ns \ "@dictRef" text match {
           case "bo:atomicNumber" ⇒
-            EndoTo(_ copy (id = ns.text.toInt))
+            Endo(_ copy (id = ns.text.toInt))
           case "bo:mass" ⇒
-            EndoTo(_ copy (mass = ns.text.toDouble.some))
+            Endo(_ copy (mass = ns.text.toDouble.some))
           case "bo:exactMass" ⇒
-            EndoTo(_ copy (exactMass = ns.text.toDouble.some))
+            Endo(_ copy (exactMass = ns.text.toDouble.some))
           case "bo:ionization" ⇒
-            EndoTo(_ copy (ionization = ns.text.toDouble.some))
+            Endo(_ copy (ionization = ns.text.toDouble.some))
           case "bo:electronAffinity" ⇒
-            EndoTo(_ copy (ea = ns.text.toDouble.some))
+            Endo(_ copy (ea = ns.text.toDouble.some))
           case "bo:electronegativityPauling" ⇒
-            EndoTo(_ copy (en = ns.text.toDouble.some))
+            Endo(_ copy (en = ns.text.toDouble.some))
           case "bo:radiusCovalent" ⇒
-            EndoTo(_ copy (rCovalent = ns.text.toDouble.some))
+            Endo(_ copy (rCovalent = ns.text.toDouble.some))
           case "bo:radiusVDW" ⇒
-            EndoTo(_ copy (rVdw = ns.text.toDouble.some))
-          case _                 ⇒ EndoTo(identity)
+            Endo(_ copy (rVdw = ns.text.toDouble.some))
+          case _                 ⇒ Endo(identity)
         }
 
       def lblToEndo (ns: Seq[Node]): Endo[EData] =
         ns \ "@dictRef" text match {
-          case "bo:name" ⇒ EndoTo(_ copy (name = ns \ "@value" text))
-          case _         ⇒ EndoTo(identity)
+          case "bo:name" ⇒ Endo(_ copy (name = ns \ "@value" text))
+          case _         ⇒ Endo(identity)
         }
 
-      def scalars = (ns \ "scalar") foldMap scalarToEndo
-      def lbls = (ns \ "label") foldMap lblToEndo
+      def scalars = (ns \ "scalar").toList foldMap scalarToEndo
+      def lbls = (ns \ "label").toList foldMap lblToEndo
 
       scalars ⊹ lbls apply EData(0)
     }

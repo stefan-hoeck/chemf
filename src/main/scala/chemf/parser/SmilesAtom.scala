@@ -40,7 +40,7 @@ object SmilesAtom {
     def fail = msg.failNel[Int]
 
     def default (v: Int): ValRes[Int] =
-      valences get e flatMap (_ find (v<=)) fold (_ - v success, fail)
+      valences get e flatMap (_ find (v<=)) cata (_ - v success, fail)
 
     bs count (Aromatic ==) match {
       case 1 ⇒ default (2 + (bs foldMap (_.valence)))

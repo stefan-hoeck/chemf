@@ -60,9 +60,9 @@ object Atom {
   def fromIsotope (i: Isotope) = Atom (i, 0, 0, Stereo.Undefined)
 
   implicit val AtomEqual: Equal[Atom] =
-    equalBy(a ⇒ (a.isotope, a.charge, a.hydrogens))
+    Equal.equalBy(a ⇒ (a.isotope, a.charge, a.hydrogens))
 
-  implicit val AtomShow: Show[Atom] = shows(_.toString)
+  implicit val AtomShow: Show[Atom] = Show.shows(_.toString)
 }
 
 // vim: set ts=2 sw=2 et:

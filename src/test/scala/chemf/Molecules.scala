@@ -23,8 +23,10 @@ object MoleculesTest extends Properties("Molecules") {
     Element.values ∀ (e ⇒ f(e, a(mol(e))))
   }
 
+  val iq = Equal[Map[String,Int]]
+
   property("formula") = singleAtomProp[Map[Isotope,Int]](
-    Molecules.formula, (e,m) ⇒ m ≟ Map(Isotope(e) → 1))
+    Molecules.formula, (e,m) ⇒ m == Map(Isotope(e) → 1))
     
 }
 

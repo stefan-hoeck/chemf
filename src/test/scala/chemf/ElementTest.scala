@@ -6,7 +6,7 @@
 
 package chemf
 
-import scalaz._; import Scalaz._
+import scalaz._, Scalaz._, std.indexedSeq._
 import org.scalacheck._
 
 /**

@@ -13,7 +13,7 @@ import scalaz._, Scalaz._
 /**
  * @author Stefan Höck
  */
-object LGraphTest extends Properties("LGraph") with Generators {
+object LGraphTest extends Properties("LGraph") with chemf.Generators {
   val atomsG = (Gen listOf arbitrary[Atom]) map (_.toIndexedSeq)
 
   def bondG (order: Int) = for {

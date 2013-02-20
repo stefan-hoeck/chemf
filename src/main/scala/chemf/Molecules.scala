@@ -25,8 +25,8 @@ trait Molecules {
    * Calculates the exact mass for a given formula. Returns None,
    * if the exact mass for one or more isotopes was not defined.
    */
-  def exactMass (f: Formula): Option[Double] = 
-    f.toSeq foldMap (p ⇒ p._1.exactMass map (_ * p._2))
+  def exactMass (f: Formula): Option[Double] =
+    f.toList foldMap (p ⇒ p._1.exactMass map (_ * p._2))
 
   /**
    * Calculates the total formula of a molecule

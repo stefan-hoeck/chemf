@@ -8,13 +8,14 @@ package chemf.parser
 
 import chemf.graph.{Edge, LGraph}
 import chemf._, Bond._, Element._
-import scalaz._, Scalaz._
+import collection.immutable.{IndexedSeq ⇒ IxSq}
+import scalaz._, Scalaz._, std.indexedSeq._
 
 /**
  * @author Stefan Höck
  */
 case class SmilesMol (
-  atoms: IndexedSeq[SmilesAtom],
+  atoms: IxSq[SmilesAtom],
   bonds: List[(Edge,Bond)],
   stack: List[SmilesMol.AtomInfo] = Nil,
   keep: Boolean = false,
@@ -86,10 +87,10 @@ object SmilesMol {
       def hs = SmilesAtom implicitHydrogens (graph edgesTo i, a.element)
       def toAtom (hs: Int) = Atom(a.isotope, a.charge, hs, a.stereo)
 
-      a.hydrogens fold (toAtom(_).success, hs map toAtom)
+      a.hydrogens cata (toAtom(_).success, hs map toAtom)
     }
     
-    graph mapI toAtom sequence
+    (graph mapI toAtom).sequence[ValRes,Atom]
   }
 
   /**
@@ -99,7 +100,7 @@ object SmilesMol {
    * and unclosed rings are all accepted silently.
    */
   implicit val SmilesMolBuilder = new SmilesBuilder[SmilesMol] {
-    val empty = SmilesMol(IndexedSeq.empty, Nil)
+    val empty = SmilesMol(IxSq.empty, Nil)
     val clear: STrans = m ⇒ SmilesMol(m.atoms, m.bonds, rings = m.rings).success
     val closeBranch: STrans = _.closeBranch
     val openBranch: STrans = _.openBranch.success
@@ -110,7 +111,7 @@ object SmilesMol {
       i: Isotope, c: Int, h: Option[Int], a: Boolean, s: Stereo, ac: Int
     ) = m ⇒ 
       m.addAtom(SmilesAtom(i, c, h, s, ac), a) |>
-      (n ⇒ m.stack.headOption fold (n addBond (_, (m.order, a)), n.success))
+      (n ⇒ m.stack.headOption cata (n addBond (_, (m.order, a)), n.success))
 
     def ring (i: Int) = m ⇒ (m.rings get i, m.stack.headOption) match {
       case (Some((x, bo)), Some(y)) ⇒ m modRings (_ - i) addBond (x, y, bo)

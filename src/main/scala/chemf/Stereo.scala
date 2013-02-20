@@ -93,7 +93,7 @@ object Stereo {
   case object OH29 extends Stereo
   case object OH30 extends Stereo
 
-  val values = Seq[Stereo] (Undefined, AW, CW, AL1, AL2, SP1, SP2, SP3,
+  val values = List[Stereo] (Undefined, AW, CW, AL1, AL2, SP1, SP2, SP3,
     TH1, TH2, TB1, TB2, TB3, TB4, TB5, TB6, TB7, TB8, TB9, TB10,
     TB11, TB12, TB13, TB14, TB15, TB16, TB17, TB18, TB19, TB20, 
     OH1, OH2, OH3, OH4, OH5, OH6, OH7, OH8, OH9, OH10,
@@ -116,9 +116,9 @@ object Stereo {
 
   val regexp = pattern.r
 
-  implicit val StereoEqual = equalA[Stereo]
+  implicit val StereoEqual = Equal.equalA[Stereo]
 
-  implicit val StereoShow = shows[Stereo](_.symbol)
+  implicit val StereoShow = Show.shows[Stereo](_.symbol)
 }
 
 // vim: set ts=2 sw=2 et:

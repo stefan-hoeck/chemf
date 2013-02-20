@@ -23,17 +23,8 @@ package object chemf {
   /**
    * Adjust all error messages (if any) in v by applying function f.
    */
-  def mapErr[E,F,A](v: ValNel[E,A], f: E ⇒ F): ValNel[F,A] =
-    v.fail ∘∘ f validation
-
-  /**
-   * Adjust all error messages (if any) in v by applying function f.
-   * This is the recommended version of mapErr when using Strings as
-   * error messages. Helps with type inference.
-   */
-  def mapErrS[A](v: ValRes[A], f: String ⇒ String): ValRes[A] =
-    mapErr(v, f)
-
+  def mapErr[E,F,A](v: ValNel[E,A])(f: E ⇒ F): ValNel[F,A] =
+    Bifunctor[Validation].leftMap(v)(_ map f)
 }
 
 // vim: set ts=2 sw=2 et:

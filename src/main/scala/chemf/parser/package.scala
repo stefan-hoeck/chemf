@@ -6,7 +6,8 @@
 
 package chemf
 
-import scalaz._, Scalaz._
+import collection.immutable.{IndexedSeq ⇒ IxSq}
+import scalaz._, Scalaz._, std.indexedSeq._
 
 /**
  * @author Stefan Höck
@@ -18,7 +19,7 @@ package object parser {
   type ValIntState[A] = IntState[ValRes[A]]
 
   //a bit of help for the compiler
-  implicit val ValSApplicative = Comp.CompApplicative[IntState,ValRes]
+  implicit val ValSApplicative = Applicative[IntState].compose[ValRes]
   implicit def ValIntStateMonoid[A:Monoid] = Monoid.liftMonoid[ValIntState,A]
 
   val EOT = '\u0004'
@@ -33,7 +34,7 @@ package object parser {
    * Parses a single line, prepending the line number to all error messages.
    */
   def parseLine[A] (f: String ⇒ ValRes[A]): String ⇒ ValIntState[A] =
-    s ⇒ state(i ⇒ (i + 1, mapErrS (f(s), "Line %d: %s" format (i, _))))
+    s ⇒ State(i ⇒ (i + 1, mapErr(f(s))(x ⇒ s"Line $i: $x")))
 
   def parseSmilesLine = parseLine(smiles)
 
@@ -43,9 +44,9 @@ package object parser {
    * due to the sequencial nature of the
    * state monad. To run the calculation starting with line number x use:
    *
-   *  bulkParseSmiles(ss) ! x
+   *  bulkParseSmiles(ss) exec x
    */
-  def bulkParseSmiles(ss: Seq[String]): ValIntState[Seq[Molecule]] =
+  def bulkParseSmiles(ss: IxSq[String]): ValIntState[IxSq[Molecule]] =
     ss.reverse traverse parseSmilesLine
 }
 
