@@ -20,6 +20,8 @@ package object chemf {
 
   type ValRes[+A] = ValNel[String,A]
 
+  type DisRes[+A] = String \/ A
+
   /**
    * Adjust all error messages (if any) in v by applying function f.
    */

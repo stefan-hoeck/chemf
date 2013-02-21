@@ -9,31 +9,53 @@ package chemf
 /**
  * @author Stefan Höck
  */
+import chemf.io._, ChemfIO._
+import collection.immutable.{IndexedSeq ⇒ IxSq}
 import collection.parallel.ForkJoinTaskSupport
-import parser._
 import graph.LGraph.dijkstra
-import scalaz._, Scalaz._
+import java.io.File
+import parser._
+import scalaz._, Scalaz._, effect.{IO, SafeApp}, std.indexedSeq._
+import scalaz.iteratee._, Iteratee._
 
-object Main extends testing.Benchmark {
-  def run {
-    val ts = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(9))
-    def str = getClass.getResourceAsStream("zinc.txt")
-    def source = scala.io.Source fromInputStream str getLines
-    val lines = source.toArray.par
+object Main extends SafeApp { //extends testing.Benchmark {
+  private lazy val fs = System.getProperty("file.separator")
+  private lazy val home = System.getProperty("user.home")
+  private lazy val desk = home + fs + "Desktop/"
+  private lazy val files = desk + "zincFiles/"
 
-    def weight(b: Bond) = b match {
-      case Bond.Aromatic ⇒ 2
-      case x        ⇒ x.valence
-    }
+  private lazy val throb = throbber[IxSq[String]](1) mapI disTo
+  private lazy val head = EnumerateeT.map[IxSq[String],String,DisIO](_.head)
+  private lazy val total = throb //⊹ linesOut(s"${desk}headers.txt")
+  private def group(i: Int) = EnumerateeT.group[String,IxSq,DisIO](i)
 
-    def maxFromZero(m: Molecule) = dijkstra(m)(0, weight)._1.max
-    def countImpHs(s: String) = smiles(s) fold (_ ⇒ 0L, maxFromZero)
-
-    lines.tasksupport = ts
-    def res = lines map countImpHs max
-
-    println(res)
+  override def runc: IO[Unit] = {
+    val enum = paths foldMap lines mapE group(30) mapE head mapE group(1000)
+    consoleRun(total &= enum run)
   }
+
+  private def paths = 
+    new File(files).list.toList.sorted filter (_ endsWith ".sdf") map (files + _)
+
+//  def run {
+//    val ts = new ForkJoinTaskSupport(new scala.concurrent.forkjoin.ForkJoinPool(9))
+//    def str = getClass.getResourceAsStream("zinc.txt")
+//    def source = scala.io.Source fromInputStream str getLines
+//    val lines = source.toArray.par
+//
+//    def weight(b: Bond) = b match {
+//      case Bond.Aromatic ⇒ 2
+//      case x        ⇒ x.valence
+//    }
+//
+//    def maxFromZero(m: Molecule) = dijkstra(m)(0, weight)._1.max
+//    def countImpHs(s: String) = smiles(s) fold (_ ⇒ 0L, maxFromZero)
+//
+//    lines.tasksupport = ts
+//    def res = lines map countImpHs max
+//
+//    println(res)
+//  }
 }
 
 // vim: set ts=2 sw=2 et:
