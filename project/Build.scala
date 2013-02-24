@@ -19,6 +19,7 @@ object BuildSettings {
     version := buildVersion,
     scalaVersion := buildScalaVersion,
     resolvers ++= repos,
+    exportJars := true,
     scalacOptions ++= Seq ("-deprecation", "-feature", "-language:postfixOps",
       "-language:higherKinds"),
     initialCommands in console := """
@@ -42,11 +43,11 @@ object Resolvers {
 }
 
 object Dependencies {
-  val scalaz_core = "org.scalaz" %% "scalaz-core" % "7.0.0-M8"
-  val scalaz_effect = "org.scalaz" %% "scalaz-effect" % "7.0.0-M8"
-  val scalaz_iteratee = "org.scalaz" %% "scalaz-iteratee" % "7.0.0-M8"
+  val scalaz_core = "org.scalaz" %% "scalaz-core" % "7.0.0-M7"
+  val scalaz_effect = "org.scalaz" %% "scalaz-effect" % "7.0.0-M7"
+  val scalaz_iteratee = "org.scalaz" %% "scalaz-iteratee" % "7.0.0-M7"
   val scalaz_scalacheck =
-    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.0.0-M8"
+    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.0.0-M7"
   val scalaz_scalacheckT = scalaz_scalacheck % "test"
 
   val scalacheck = "org.scalacheck" %% "scalacheck" % "1.10.0"
@@ -60,7 +61,8 @@ object UtilBuild extends Build {
 
   def addDeps (ds: Seq[ModuleID]) =
     BuildSettings.buildSettings ++
-    Seq (libraryDependencies ++= ds)
+    Seq (libraryDependencies ++= ds) ++
+    com.github.retronym.SbtOneJar.oneJarSettings
 
   lazy val chemf = Project (
     "chemf",

@@ -19,18 +19,19 @@ import scalaz._, Scalaz._, effect.{IO, SafeApp}, std.indexedSeq._
 import scalaz.iteratee._, Iteratee._
 
 object Main extends SafeApp { //extends testing.Benchmark {
-  private lazy val fs = System.getProperty("file.separator")
-  private lazy val home = System.getProperty("user.home")
-  private lazy val desk = home + fs + "Desktop/"
-  private lazy val files = desk + "zincFiles/"
+  private val fs = System.getProperty("file.separator")
+  private val home = System.getProperty("user.home")
+  private val desk = home + fs + "Desktop/"
+  private val files = desk + "zincFiles/"
 
-  private lazy val throb = throbber[IxSq[String]](1) mapI disTo
-  private lazy val head = EnumerateeT.map[IxSq[String],String,DisIO](_.head)
-  private lazy val total = throb //⊹ linesOut(s"${desk}headers.txt")
-  private def group(i: Int) = EnumerateeT.group[String,IxSq,DisIO](i)
+  private val throb = throbber[IxSq[String]](1000) mapI disTo
+  private val total = throb ⊹ linesOut(s"${desk}headers.txt")
+  private val head = mapper[IxSq[IxSq[String]],IxSq[String],DisIO](_ map (_.head))
+  private def group[A](i: Int) = EnumerateeT.group[A,IxSq,DisIO](i)
 
   override def runc: IO[Unit] = {
-    val enum = paths foldMap lines mapE group(30) mapE head mapE group(1000)
+    val enum = paths foldMap sdfLines mapE group(100) mapE head
+
     consoleRun(total &= enum run)
   }
 

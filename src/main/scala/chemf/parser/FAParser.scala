@@ -17,7 +17,7 @@ import scalaz._, Scalaz._
 sealed trait FAState[A] {
   /**
    * Calculates a new automaton state and product from
-   * the actual prodact a and character c.
+   * the actual product a and character c.
    */
   def next(a: A, c: Char): FARes[A]
 }

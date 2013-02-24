@@ -23,7 +23,7 @@ trait IterFunctions {
 
   def linesOutF(f: DisIO[File]): DIter[IxSq[String],Unit] = 
     disIO.resourceIter(f >>= fileWriter)(
-      (ls, o) ⇒ ls.foldMap( l ⇒ IO(o println l)) >> IO(o.flush())
+      (ls, o) ⇒ ls.foldMap( l ⇒ IO(o println l))
     )
 
   def throbber[E](inc: Int): IterateeT[E,IO,Unit] = {
@@ -60,8 +60,24 @@ trait IterInstances {
   implicit def IterMonoid[E,F[_]:Monad,A:Monoid]: Monoid[IterateeT[E,F,A]] =
     new Monoid[IterateeT[E,F,A]] {
       type Iter[X] = IterateeT[E,F,X]
+      type Stp[X] = StepT[E,F,X]
+
       val zero = ∅[A].η[Iter]
-      def append(a: Iter[A], b: ⇒ Iter[A]) = a zip b map { p ⇒ p._1 ⊹ p._2 }
+
+      def append(a: Iter[A], b: ⇒ Iter[A]): Iter[A] = iterateeT[E,F,A](
+        for {
+          sta ← a.value
+          stb ← b.value
+        } yield stepConcat(sta, stb)
+      )
+
+      import StepT.{Cont, Done}
+      def stepConcat(a: Stp[A], b: Stp[A]): Stp[A] = (a, b) match {
+        case (Cont(fa), Cont(fb))     ⇒ scont(i ⇒ append(fa(i), fb(i)))
+        case (Cont(fa), b@Done(_, _)) ⇒ scont(i ⇒ append(fa(i), b.pointI))
+        case (a@Done(_, _), Cont(fb)) ⇒ scont(i ⇒ append(a.pointI, fb(i)))
+        case (Done(a, i), Done(b, j)) ⇒ sdone(a ⊹ b, i)
+      }
     }
 
   implicit val WriterResource: Resource[PrintWriter] = 

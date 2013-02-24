@@ -44,7 +44,7 @@ package object parser {
    * due to the sequencial nature of the
    * state monad. To run the calculation starting with line number x use:
    *
-   *  bulkParseSmiles(ss) exec x
+   * `bulkParseSmiles(ss) exec x`
    */
   def bulkParseSmiles(ss: IxSq[String]): ValIntState[IxSq[Molecule]] =
     ss.reverse traverse parseSmilesLine

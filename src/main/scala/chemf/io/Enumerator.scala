@@ -11,7 +11,7 @@ trait EnumeratorFunctions {
   import enumerator._
 
   def lines(path: String): DEnum[String] =
-    linesF(disIO rightIO(new File(path)))
+    linesF(disIO.rightIO(new File(path)))
 
   def linesF(f: DisIO[File]): DEnum[String] =
     linesR(f >>= fileReader)
@@ -22,8 +22,13 @@ trait EnumeratorFunctions {
   def molLines(path: String): DEnum[IxSq[String]] = sdfLines(path)
 
   def sdfLines(path: String): DEnum[IxSq[String]] = 
-    lines(path) mapE 
-    EnumerateeT.splitOn[String,IxSq,DisIO](s ⇒ !s.startsWith("$$$$"))
+    sdfLinesF(disIO.rightIO(new File(path)))
+
+  def sdfLinesF(f: DisIO[File]): DEnum[IxSq[String]] =
+    sdfLinesR(f >>= fileReader)
+
+  def sdfLinesR(br: DisIO[BufferedReader]): DEnum[IxSq[String]] =
+    disIO.resourceEnum(br)(sdfReader(_))
 
   def smilesLines(path: String): DEnum[String] = lines(path)
 
@@ -34,21 +39,77 @@ trait EnumeratorFunctions {
       disIO leftIO s"Error when opening file: ${f.getPath}"
   }
 
-  private def lineReader(r: ⇒ BufferedReader): DEnum[String] =
-    new EnumeratorT[String,DisIO] {
-      lazy val reader = r
+  import StepT.{Cont, Done}
 
+  def mapper[O,I,F[_]:Monad](f: O ⇒ I): EnumerateeT[O,I,F] =
+    new EnumerateeT[O,I,F] {
+      type Stp[A] = StepT[I,F,A]
+      type It[A,B] = IterateeT[A,F,B]
+
+      def apply[A]: Stp[A] ⇒ It[O,Stp[A]] = _ match {
+        case s@Done(a, i) ⇒ sdone[O,F,Stp[A]](s, emptyInput).pointI
+        case Cont(g)      ⇒ scont[O,F,Stp[A]](io ⇒ 
+          g(io map (f(_))) >>== apply[A]
+        ).pointI
+      }
+    }
+
+  //def grouper[O,F[_]:Monad](cnt: Int): EnumerateeT[O,IxSq[O],F] =
+  //  new EnumerateeT[O,IxSq[O],F] {
+  //    type Stp[A] = StepT[IxSq[O],F,A]
+  //    type It[A,B] = IterateeT[A,F,B]
+
+  //    def apply[A]: Stp[A] ⇒ It[O,Stp[A]] = {
+  //      def loop(c: Int, acc: IxSq[O]): Stp[A] ⇒ It[O,Stp[A]] = (c, _) match {
+  //        case
+  //      }
+
+  //      loop(cnt, IxSq.empty) 
+  //    }
+  //  }
+
+  private def lineReader(r: BufferedReader): DEnum[String] =
+    new EnumeratorT[String,DisIO] {
       def apply[A] = (s: DStep[String,A]) ⇒ s mapCont { k ⇒
         try {
-          Option(reader.readLine) cata (
-            line ⇒ k(elInput(line)) >>== apply[A],
-            s.pointI
-          )
+          r.readLine match {
+            case null ⇒ s.pointI
+            case line ⇒ k(elInput(line)) >>== apply[A]
+          }
         } catch {
           case NonFatal(e) ⇒ iterateeT[String,DisIO,A](disIO leftIO e.toString)
         }
       }
     }
+
+  private def sdfReader(r: BufferedReader): DEnum[IxSq[String]] =
+    new EnumeratorT[IxSq[String],DisIO] {
+      def apply[A] = (s: DStep[IxSq[String],A]) ⇒ s mapCont { k ⇒
+        try {
+          val buff = new collection.mutable.ListBuffer[String]
+          var break = false
+          
+          while(! break) {
+            r.readLine match {
+              case null      ⇒ break = true
+              case "$$$$"    ⇒ break = true
+              case s         ⇒ buff += s
+            }
+          }
+
+          val lines = buff.toIndexedSeq
+
+          if (lines.isEmpty) s.pointI
+          else k(elInput(lines)) >>== apply[A]
+
+        } catch {
+          case NonFatal(e) ⇒ iterateeT[IxSq[String],DisIO,A](disIO leftIO e.toString)
+        }
+      }
+    }
+
+
+
 
 }
 
