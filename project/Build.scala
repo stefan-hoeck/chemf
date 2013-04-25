@@ -8,17 +8,14 @@ import sbt._
 import Keys._
 
 object BuildSettings {
-  import Resolvers._
-
   val buildOrganization = "chemf"
   val buildVersion = "1.0.1-SNAPSHOT"
-  val buildScalaVersion = "2.10.0"
+  val buildScalaVersion = "2.10.1"
 
   val buildSettings = Defaults.defaultSettings ++ Seq (
     organization := buildOrganization,
     version := buildVersion,
     scalaVersion := buildScalaVersion,
-    resolvers ++= repos,
     exportJars := true,
     scalacOptions ++= Seq ("-deprecation", "-feature", "-language:postfixOps",
       "-language:higherKinds"),
@@ -34,32 +31,23 @@ object BuildSettings {
 
 } 
 
-object Resolvers {
- val scalatoolsRepo = "Scala-Tools Maven2 Repository Releases" at
-   "http://scala-tools.org/repo-releases"
- val sonatypeRepo = "releases" at
-   "http://oss.sonatype.org/content/repositories/releases"
- val repos = Seq (scalatoolsRepo, sonatypeRepo)
-}
-
 object Dependencies {
-  val scalaz_core = "org.scalaz" %% "scalaz-core" % "7.0.0-M7"
-  val scalaz_effect = "org.scalaz" %% "scalaz-effect" % "7.0.0-M7"
-  val scalaz_iteratee = "org.scalaz" %% "scalaz-iteratee" % "7.0.0-M7"
-  val scalaz_scalacheck =
-    "org.scalaz" %% "scalaz-scalacheck-binding" % "7.0.0-M7"
-  val scalaz_scalacheckT = scalaz_scalacheck % "test"
+  val scalaz = "org.scalaz"
+  val scalazV = "7.0.0"
 
-  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.10.0"
-  val scalacheckT = scalacheck % "test"
+  val scalaz_core = scalaz %% "scalaz-core" % scalazV
+  val scalaz_effect = scalaz %% "scalaz-effect" % scalazV
+  val scalaz_iteratee = scalaz %% "scalaz-iteratee" % scalazV
+  val scalaz_scalacheck = scalaz %% "scalaz-scalacheck-binding" % scalazV % "test"
+
+  val scalacheck = "org.scalacheck" %% "scalacheck" % "1.10.0" % "test"
 }
 
 object UtilBuild extends Build {
-  import Resolvers._
   import Dependencies._
   import BuildSettings._
 
-  def addDeps (ds: Seq[ModuleID]) =
+  def addDeps (ds: ModuleID*) =
     BuildSettings.buildSettings ++
     Seq (libraryDependencies ++= ds) ++
     com.github.retronym.SbtOneJar.oneJarSettings
@@ -67,10 +55,8 @@ object UtilBuild extends Build {
   lazy val chemf = Project (
     "chemf",
     file("."),
-    settings = addDeps (
-                 Seq(scalaz_core, scalaz_effect, scalaz_iteratee,
-                     scalaz_scalacheckT, scalacheckT)
-               )
+    settings = addDeps (scalaz_core, scalaz_effect, scalaz_iteratee,
+                 scalaz_scalacheck, scalacheck)
   )
 }
 
