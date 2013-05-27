@@ -18,7 +18,7 @@ import scalaz._, Scalaz._
 object Main extends testing.Benchmark {
   def run {
     val ts = new ForkJoinTaskSupport(
-      new scala.concurrent.forkjoin.ForkJoinPool(9))
+      new scala.concurrent.forkjoin.ForkJoinPool(4))
     def str = getClass.getResourceAsStream("zinc.txt")
     def source = scala.io.Source fromInputStream str getLines
     val lines = source.toArray.par

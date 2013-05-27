@@ -117,8 +117,7 @@ trait LGraph[E,+V] {
 
   def :+ [W>:V](w: W): LGraph[E,W] = addVertex(w)
 
-  private[this] lazy val edgeList: Array[List[E]] @uncheckedVariance =
-    LGraph edgeList this
+  private[graph] def edgeList: Array[List[E]] @uncheckedVariance
 }
 
 object LGraph {
@@ -154,11 +153,17 @@ object LGraph {
     (min, p)
   }
 
-  private[LGraph] def edgeList[E,V] (lg: LGraph[E,V]): Array[List[E]] = {
-    def edgesFor (i: Int) =
-      lg.graph neighbors i map (n ⇒ lg eLabel Edge(n,i))
+  private[LGraph] def edgeList[E,V] (lg: LgImpl[E,V]): Array[List[E]] = {
+    val res = Array.fill[List[E]](lg.order)(Nil)
 
-    Array.tabulate(lg.order)(edgesFor)
+    def add(p: (Edge,E)) {
+      res(p._1.a) = p._2 :: res(p._1.a)
+      res(p._1.b) = p._2 :: res(p._1.b)
+    }
+
+    lg.eMap foreach add
+
+    res
   }
 
   /** Implementing Class **/
@@ -204,6 +209,9 @@ object LGraph {
       vertices traverse f map (LgImpl(graph, _, eMap))
 
     def vLabel (v: Int) = vertices (v)
+
+    private[graph] lazy val edgeList: Array[List[E]] @uncheckedVariance =
+      LGraph edgeList this
   }
 
   /** Type Classes **/

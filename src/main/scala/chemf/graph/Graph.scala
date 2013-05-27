@@ -26,7 +26,7 @@ sealed trait Graph {
    * Returns the graph's adjacencyList, which is a mapping
    * from a vertex to its neighbors.
    */
-  lazy val adjacencyList: ImmutableArray[List[Int]] =
+  private[chemf] lazy val adjacencyList: Array[List[Int]] =
     Graph adjacencyList this
 
   /**
@@ -67,7 +67,11 @@ sealed trait Graph {
   /**
    * Returns the number of neighbors of vertex v.
    */
-  def degree (v: Int): Int = adjacencyList(v) size
+  def degree (v: Int): Int = degrees(v)
+
+  /** Returns the degrees of all vertices in an array. */
+  private[chemf] lazy val degrees: Array[Int] =
+    adjacencyList map { _.size }
 
   /**
    * A Set of all edges in this graph
@@ -175,7 +179,7 @@ object Graph {
    * Calculates the adjacencyList of a graph. This is
    * also available as a lazy field from class Graph itself.
    */
-  def adjacencyList (g: Graph): ImmutableArray[List[Int]] = {
+  def adjacencyList(g: Graph): Array[List[Int]] = {
     val res = Array.fill[List[Int]] (g.order)(Nil)
 
     def addEdge (e: Edge) {
@@ -185,7 +189,7 @@ object Graph {
 
     g.edges foreach addEdge
 
-    ImmutableArray fromArray res
+    res
   }
 
   private case class GraphImpl (order: Int, edges: Set[Edge]) extends Graph

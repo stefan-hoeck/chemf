@@ -37,6 +37,7 @@ object Dependencies {
 
   val scalaz_core = scalaz %% "scalaz-core" % scalazV
   val scalaz_effect = scalaz %% "scalaz-effect" % scalazV
+  val scalaz_concurrent = scalaz %% "scalaz-concurrent" % scalazV
   val scalaz_iteratee = scalaz %% "scalaz-iteratee" % scalazV
   val scalaz_scalacheck = scalaz %% "scalaz-scalacheck-binding" % scalazV % "test"
 
@@ -55,8 +56,9 @@ object UtilBuild extends Build {
   lazy val chemf = Project (
     "chemf",
     file("."),
-    settings = addDeps (scalaz_core, scalaz_effect, scalaz_iteratee,
-                 scalaz_scalacheck, scalacheck)
+    settings = addDeps (scalaz_core, scalaz_concurrent,
+                        scalaz_effect, scalaz_iteratee,
+                        scalaz_scalacheck, scalacheck)
   )
 }
 
