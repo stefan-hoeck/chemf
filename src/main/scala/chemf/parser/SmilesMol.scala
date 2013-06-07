@@ -6,7 +6,7 @@
 
 package chemf.parser
 
-import chemf.graph.{Edge, LGraph}
+import graph.{Edge, LGraph}
 import chemf._, Bond._, Element._
 import collection.immutable.{IndexedSeq ⇒ IxSq}
 import scalaz._, Scalaz._, std.indexedSeq._

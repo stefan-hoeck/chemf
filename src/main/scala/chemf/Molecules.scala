@@ -7,7 +7,7 @@
 package chemf
 
 import Element.H
-import chemf.graph.LGraph
+import graph.LGraph
 import scalaz._, Scalaz._
 
 /**

@@ -7,7 +7,7 @@
 package chemf.parser
 
 import FAState.{dummy}
-import chemf.graph.{Edge, LGraph}
+import graph.{Edge, LGraph}
 import chemf._, Element._, Bond._
 import scalaz._, Scalaz._
 

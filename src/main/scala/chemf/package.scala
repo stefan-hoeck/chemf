@@ -4,7 +4,7 @@
 **                Wädenswil, Switzerland                           **
 \**                                                               **/
 
-import chemf.graph.{Edge, LGraph}
+import graph.{Edge, LGraph}
 import scalaz._, Scalaz._
 
 /**

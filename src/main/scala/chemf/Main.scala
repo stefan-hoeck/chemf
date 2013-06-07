@@ -9,26 +9,30 @@ package chemf
 /**
  * @author Stefan Höck
  */
-import collection.immutable.{IndexedSeq ⇒ IxSq}
-import collection.parallel.ForkJoinTaskSupport
 import java.io.File
 import parser._
 import scalaz._, Scalaz._
+import graph.iso2
 
 object Main extends testing.Benchmark {
   def run {
-    val ts = new ForkJoinTaskSupport(
-      new scala.concurrent.forkjoin.ForkJoinPool(9))
     def str = getClass.getResourceAsStream("zinc.txt")
     def source = scala.io.Source fromInputStream str getLines
     val lines = source.toArray.par
 
-    def countImpHs(s: String) = smiles(s) fold (_ ⇒ 0, _ foldMap (_.hydrogens))
+    def countImpHs(s: String) = smiles(s) fold (_ ⇒ (0L, s), time(s))
 
-    lines.tasksupport = ts
-    def res = lines map countImpHs sum
+    def res = (lines map countImpHs).toList.sorted.reverse take 100
 
-    println(res)
+    println(res mkString "\n")
+  }
+
+  def time(s: String)(m: Molecule): (Long, String) = {
+    val start = System.nanoTime
+    val sol = iso2 solve m.graph
+    val stop = System.nanoTime
+
+    (stop - start, s)
   }
 }
 

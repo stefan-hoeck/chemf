@@ -35,6 +35,8 @@ object Dependencies {
   val scalaz = "org.scalaz"
   val scalazV = "7.0.0"
 
+  val graph = "graph" %% "graph" % "0.1.0-SNAPSHOT" changing
+
   val scalaz_core = scalaz %% "scalaz-core" % scalazV
   val scalaz_effect = scalaz %% "scalaz-effect" % scalazV
   val scalaz_iteratee = scalaz %% "scalaz-iteratee" % scalazV
@@ -56,7 +58,7 @@ object UtilBuild extends Build {
     "chemf",
     file("."),
     settings = addDeps (scalaz_core, scalaz_effect, scalaz_iteratee,
-                 scalaz_scalacheck, scalacheck)
+                 scalaz_scalacheck, scalacheck, graph)
   )
 }
 
